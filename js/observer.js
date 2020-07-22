@@ -3,6 +3,7 @@ class Observer {
     this.walk(data)
   }
   walk(data) {
+    
     if (!data || typeof data !== 'object') {
       return
     }
@@ -19,15 +20,15 @@ class Observer {
       enumerable: true,
       configurable: true,
       get() {
-        return data[key]
+        return val
       },
       set(newvalue) {
-        if (data[key] === newvalue) {
+        if (val === newvalue) {
           return
         }
-        data[key] = newvalue
+        val = newvalue
         //新修改上去的值也要是响应式的
-        this.walk(newvalue)
+        that.walk(newvalue)
         //发送通知
       },
     })
