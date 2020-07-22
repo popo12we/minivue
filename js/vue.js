@@ -10,6 +10,7 @@ class Vue {
         : options.el
     this._proxyData(this.$data)
     //3调用observer对象监听数据变化
+    new Observer(this.$data)
   }
   _proxyData(data) {
       Object.keys(data).forEach(key => {
