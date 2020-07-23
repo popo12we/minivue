@@ -32,23 +32,29 @@ class Compiler {
         attrName = attrName.substr(2)
         //指令值
         let key = attr.value
-        this.update(node,key,attrName)
+        this.update(node, key, attrName)
       }
     })
   }
 
-  update(node,key,attrName){
-      let updateFn =this[attrName+"Updater"]
-      updateFn&&updateFn(node,this.vm[key])
+  update(node, key, attrName) {
+    let updateFn = this[attrName + 'Updater']
+    updateFn && updateFn.call(this, node, this.vm[key], key)
   }
-  
+
   // 处理v-text 指令
-  textUpdater(node,value){
-      node.textContent=value
+  textUpdater(node, value, key) {
+    node.textContent = value
+    new Watcher(this.vm, key, (newValue) => {
+      node.textContent = newValue
+    })
   }
   // v-model
-  modelUpdater(node,value){
-      node.value=value
+  modelUpdater(node, value, key) {
+    node.value = value
+    new Watcher(this.vm, key, (newValue) => {
+      node.value = newValue
+    })
   }
   // 编译文本节点,处理差值表达式
   compileText(node) {
@@ -58,6 +64,9 @@ class Compiler {
     if (reg.test(value)) {
       let key = RegExp.$1.trim()
       node.textContent = value.replace(reg, this.vm[key])
+      new Watcher(this.vm, key, (newValue) => {
+        node.textContent = newValue
+      })
     }
   }
   // 判断元素属性是否是指令
