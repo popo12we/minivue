@@ -3,7 +3,6 @@ class Observer {
     this.walk(data)
   }
   walk(data) {
-    
     if (!data || typeof data !== 'object') {
       return
     }
@@ -14,12 +13,16 @@ class Observer {
 
   defineReactive(data, key, val) {
     //递归遍历 防止对象里还是对象
-    this.walk(val)
     let that = this
+    this.walk(val)
+    //负责收集依赖,并发送通知
+    let dep=new Dep()
     Object.defineProperty(data, key, {
       enumerable: true,
       configurable: true,
       get() {
+        //收集依赖
+        Dep.target&&dep.addSub(Dep.target)
         return val
       },
       set(newvalue) {
@@ -30,6 +33,7 @@ class Observer {
         //新修改上去的值也要是响应式的
         that.walk(newvalue)
         //发送通知
+        dep.notify()
       },
     })
   }
