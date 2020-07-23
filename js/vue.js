@@ -8,9 +8,12 @@ class Vue {
       typeof options.el === 'string'
         ? document.querySelector(options.el)
         : options.el
+       
     this._proxyData(this.$data)
     //3调用observer对象监听数据变化
     new Observer(this.$data)
+    //4调用compiler解析指令和差值表达式
+    new Compiler(this)
   }
   _proxyData(data) {
       Object.keys(data).forEach(key => {
